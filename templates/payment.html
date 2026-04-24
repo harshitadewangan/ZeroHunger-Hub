@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Payment - ZeroHungerHub{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar animate-up">
+        <h3 style="margin-bottom: 2rem; font-size: 1.2rem; color: var(--secondary);">Secure Payment</h3>
+        <nav>
+            <a href="{{ url_for('volunteer_dashboard') }}" class="sidebar-link">
+                <i class="fas fa-arrow-left"></i> Cancel Payment
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main animate-up" style="animation-delay: 0.1s;">
+        <header style="margin-bottom: 3rem; text-align: center; max-width: 800px; margin: 0 auto 3rem;">
+            <div style="width: 80px; height: 80px; background: #f0fdf4; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; border: 2px solid var(--primary);">
+                <i class="fas fa-lock" style="color: var(--primary); font-size: 2rem;"></i>
+            </div>
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Secure <span class="text-primary">Verification</span></h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 0;">Complete the collection for <strong>{{ booking[2] }}</strong></p>
+        </header>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; max-width: 1000px; margin: 0 auto;">
+            <!-- Payment QR Section -->
+            <div class="glass-card" style="text-align: center;">
+                <h3 style="margin-bottom: 1.5rem;">Scan & Pay</h3>
+                <div style="width: 250px; height: 250px; background: #f8fafc; border: 1px dashed var(--border); border-radius: var(--radius-md); margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    {% if booking[4] %}
+                        <img src="{{ url_for('uploaded_file', filename=booking[4]) }}" style="width: 100%; height: 100%; object-fit: contain;">
+                    {% else %}
+                        <i class="fas fa-qrcode" style="font-size: 8rem; color: #cbd5e1;"></i>
+                    {% endif %}
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem;">UPI ID</span>
+                    <strong style="font-size: 1.2rem; color: var(--secondary);">{{ booking[3] or 'Pay at pickup' }}</strong>
+                </div>
+                <div style="background: #fff7ed; padding: 1.5rem; border-radius: 12px; border: 1px solid #fed7aa; color: #9a3412; font-size: 0.9rem; text-align: left;">
+                    <i class="fas fa-info-circle"></i> After paying, please ask the donor for the <strong>Verification Code</strong> and enter it on the right.
+                </div>
+            </div>
+
+            <!-- Verification Section -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 1.5rem;">Complete Exchange</h3>
+                <div style="background: #f8fafc; padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span style="color: var(--text-muted);">Amount Due</span>
+                        <strong style="color: var(--secondary);">₹{{ "%.2f"|format(booking[1]) }}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <span style="font-weight: 700;">Grand Total</span>
+                        <strong style="font-weight: 800; color: var(--primary); font-size: 1.25rem;">₹{{ "%.2f"|format(booking[1]) }}</strong>
+                    </div>
+                </div>
+
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="verification_code"><i class="fas fa-shield-alt" style="margin-right: 0.5rem; color: var(--primary);"></i> Enter Verification Code</label>
+                        <input type="text" id="verification_code" name="verification_code" placeholder="XXXXXX" style="font-size: 1.5rem; font-weight: 800; text-align: center; letter-spacing: 0.5em; text-transform: uppercase;" required>
+                        <small style="color: var(--text-muted); text-align: center; display: block; margin-top: 1rem;">This code is provided by the donor at the point of collection.</small>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" style="width: 100%; margin-top: 2rem;">Verify & Complete Order</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

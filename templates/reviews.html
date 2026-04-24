@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Community Reviews — ZeroHungerHub{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/reviews.css') }}">
+<meta name="description" content="Read real experiences from donors and volunteers on ZeroHungerHub — the food-sharing community making zero hunger a reality.">
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ── -->
+<section class="reviews-hero">
+    <h1><i class="fas fa-quote-left" style="color:#10b981; margin-right:0.5rem;"></i> Community Reviews</h1>
+    <p>Real stories from donors and volunteers who are making a difference every day.</p>
+    <div class="reviews-hero-actions">
+        {% if session.get('user_id') %}
+            <a href="{{ url_for('submit_review') }}" class="btn-primary" id="btn-write-review">
+                <i class="fas fa-pen"></i> Write a Review
+            </a>
+            <a href="{{ url_for('my_reviews') }}" class="btn-outline" id="btn-my-reviews"
+               style="border-color: rgba(255,255,255,0.4); color:white; background:rgba(255,255,255,0.08);">
+                <i class="fas fa-bookmark"></i> My Reviews
+            </a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="btn-primary" id="btn-login-to-review">
+                <i class="fas fa-sign-in-alt"></i> Log In to Write a Review
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ── Stats bar ── -->
+<div class="reviews-section">
+    <div class="reviews-stats">
+        <div class="reviews-stat-pill">
+            <i class="fas fa-star"></i>
+            <span>{{ reviews | length }} Review{% if reviews|length != 1 %}s{% endif %} Posted</span>
+        </div>
+        {% if reviews %}
+        <div class="reviews-stat-pill">
+            <i class="fas fa-users"></i>
+            <span>Donors &amp; Volunteers Sharing</span>
+        </div>
+        {% set avg = (reviews | map(attribute=2) | sum / reviews|length) | round(1) %}
+        <div class="reviews-stat-pill">
+            <i class="fas fa-award"></i>
+            <span>{{ avg }} / 5 Average Rating</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ── Review grid ── -->
+    {% if not reviews %}
+    <div class="reviews-empty" id="reviews-empty-state">
+        <i class="fas fa-comment-dots"></i>
+        <h3>No reviews yet</h3>
+        <p>Be the first to share your experience with the ZeroHungerHub community!</p>
+        {% if session.get('user_id') %}
+            <a href="{{ url_for('submit_review') }}" class="btn-primary" id="btn-first-review">
+                <i class="fas fa-pen"></i> Write First Review
+            </a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="btn-primary" id="btn-login-first">
+                <i class="fas fa-sign-in-alt"></i> Join &amp; Share
+            </a>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="reviews-grid" id="reviews-grid">
+        {% for review in reviews %}
+        {# review = (user_name, role, rating, content, created_at) #}
+        <article class="review-card" id="review-card-{{ loop.index }}">
+            <!-- Header: avatar + meta -->
+            <div class="review-card-header">
+                <div class="review-avatar {{ review[1] }}">
+                    {{ review[0][0] | upper }}
+                </div>
+                <div class="review-meta">
+                    <div class="review-meta-name">{{ review[0] }}</div>
+                    <div class="review-meta-sub">
+                        <span class="role-badge {{ review[1] }}">
+                            {% if review[1] == 'donor' %}
+                                <i class="fas fa-hand-holding-heart"></i> Donor
+                            {% else %}
+                                <i class="fas fa-hands-helping"></i> Volunteer
+                            {% endif %}
+                        </span>
+                        <span class="review-date">
+                            <i class="fas fa-clock" style="margin-right:3px;"></i>
+                            {{ review[4][:16] | replace('T', ' ') }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Star rating -->
+            <div class="stars-display" aria-label="{{ review[2] }} out of 5 stars">
+                {% for i in range(1, 6) %}
+                    {% if i <= review[2] %}
+                        <i class="fas fa-star filled"></i>
+                    {% else %}
+                        <i class="fas fa-star"></i>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Content -->
+            <p class="review-content">{{ review[3] }}</p>
+        </article>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

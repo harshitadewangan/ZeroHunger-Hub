@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}My Listings - ZeroHungerHub{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar animate-up">
+        <h3 style="margin-bottom: 2rem; font-size: 1.2rem; color: var(--secondary);">Donor Menu</h3>
+        <nav>
+            <a href="{{ url_for('donor_dashboard') }}" class="sidebar-link">
+                <i class="fas fa-chart-line"></i> Overview
+            </a>
+            <a href="{{ url_for('add_food') }}" class="sidebar-link">
+                <i class="fas fa-plus-circle"></i> Post Surplus
+            </a>
+            <a href="{{ url_for('view_food') }}" class="sidebar-link active">
+                <i class="fas fa-list"></i> My Listings
+            </a>
+            <a href="{{ url_for('donor_history') }}" class="sidebar-link">
+                <i class="fas fa-history"></i> Donation History
+            </a>
+            <a href="{{ url_for('profile') }}" class="sidebar-link">
+                <i class="fas fa-user-gear"></i> Profile Settings
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main animate-up" style="animation-delay: 0.1s;">
+        <header style="margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Manage <span class="text-primary">Active Listings</span></h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 0;">Check status, update, or remove your available food posts.</p>
+            </div>
+            <a href="{{ url_for('add_food') }}" class="btn-primary">
+                <i class="fas fa-plus"></i> Post New Item
+            </a>
+        </header>
+
+        {% if not foods %}
+            <div class="glass-card" style="text-align: center; padding: 5rem 2rem;">
+                <i class="fas fa-box-open" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 2rem;"></i>
+                <h2>No active listings.</h2>
+                <p style="color: var(--text-muted);">You haven't posted any surplus food yet.</p>
+                <a href="{{ url_for('add_food') }}" class="btn-primary" style="margin-top: 2rem;">Create Your First Listing</a>
+            </div>
+        {% else %}
+            <div class="data-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Preview</th>
+                            <th>Food Item</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Location</th>
+                            <th>Expiry</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for food in foods %}
+                        <tr data-food-id="{{ food[0] }}">
+                            <td>
+                                {% if food[6] %}
+                                    <img src="{{ url_for('uploaded_file', filename=food[6]) }}" alt="{{ food[1] }}" style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border);">
+                                {% else %}
+                                    <div style="width: 50px; height: 50px; background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 1rem;">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <strong style="color: var(--secondary); font-size: 1rem;">{{ food[1] }}</strong>
+                            </td>
+                            <td>{{ food[2] }}</td>
+                            <td>
+                                <span style="font-weight: 700; color: var(--primary);">
+                                    {% if food[3] == 0 %}FREE{% else %}₹{{ food[3] }}{% endif %}
+                                </span>
+                            </td>
+                            <td><span style="font-size: 0.9rem; color: var(--text-muted);"><i class="fas fa-map-marker-alt"></i> {{ food[4] }}</span></td>
+                            <td style="font-weight: 600;">{{ food[5] }}</td>
+                            <td style="text-align: right; display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap;">
+                                <a href="{{ url_for('edit_food', food_id=food[0]) }}" class="btn-secondary" style="padding: 0.55rem 0.85rem; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <button type="button" class="btn-danger delete-post-btn" data-food-id="{{ food[0] }}" style="padding: 0.55rem 0.85rem; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

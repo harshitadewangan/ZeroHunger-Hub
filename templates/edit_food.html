@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Listing - ZeroHungerHub{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <aside class="dashboard-sidebar animate-up">
+        <h3 style="margin-bottom: 2rem; font-size: 1.2rem; color: var(--secondary);">Manage Listing</h3>
+        <nav>
+            <a href="{{ url_for('donor_dashboard') }}" class="sidebar-link">
+                <i class="fas fa-chart-line"></i> Overview
+            </a>
+            <a href="{{ url_for('view_food') }}" class="sidebar-link">
+                <i class="fas fa-list"></i> My Listings
+            </a>
+            <a href="{{ url_for('add_food') }}" class="sidebar-link">
+                <i class="fas fa-plus-circle"></i> Post Surplus
+            </a>
+            <a href="{{ url_for('donor_history') }}" class="sidebar-link">
+                <i class="fas fa-history"></i> Donation History
+            </a>
+            <a href="{{ url_for('profile') }}" class="sidebar-link">
+                <i class="fas fa-user-gear"></i> Profile Settings
+            </a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main animate-up" style="animation-delay: 0.1s;">
+        <header style="margin-bottom: 3rem;">
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Edit <span class="text-primary">Listing</span></h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 0;">Update your listing details and save the latest information.</p>
+        </header>
+
+        <div class="glass-card" style="max-width: 800px;">
+            <form method="POST" enctype="multipart/form-data">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="form-group">
+                        <label for="name"><i class="fas fa-utensils" style="margin-right: 0.5rem; color: var(--primary);"></i> Food Item Name</label>
+                        <input type="text" id="name" name="name" placeholder="E.g. Fresh Garden Salad" value="{{ food.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity"><i class="fas fa-weight" style="margin-right: 0.5rem; color: var(--primary);"></i> Quantity / Portions</label>
+                        <input type="text" id="quantity" name="quantity" placeholder="E.g. 5 KG or 10 Portions" value="{{ food.quantity }}" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="form-group">
+                        <label for="price"><i class="fas fa-tags" style="margin-right: 0.5rem; color: var(--primary);"></i> Price (₹)</label>
+                        <input type="number" id="price" name="price" step="0.01" value="{{ food.price }}" required>
+                        <small style="color: var(--text-muted);">Enter 0.00 for free donations.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="expiry"><i class="fas fa-hourglass-end" style="margin-right: 0.5rem; color: var(--primary);"></i> Best Before Date/Time</label>
+                        <input type="text" id="expiry" name="expiry" placeholder="E.g. Today by 8 PM" value="{{ food.expiry }}" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="location"><i class="fas fa-map-marker-alt" style="margin-right: 0.5rem; color: var(--primary);"></i> Collection Location</label>
+                    <input type="text" id="location" name="location" placeholder="Full address or area..." value="{{ food.location }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contact"><i class="fas fa-phone" style="margin-right: 0.5rem; color: var(--primary);"></i> Contact Number</label>
+                    <input type="text" id="contact" name="contact" value="{{ food.contact }}" placeholder="Enter contact number or WhatsApp">
+                </div>
+
+                <div class="form-group">
+                    <label for="image"><i class="fas fa-camera" style="margin-right: 0.5rem; color: var(--primary);"></i> Food Photo</label>
+                    {% if food.image %}
+                        <div style="margin-bottom: 1rem;">
+                            <img src="{{ url_for('uploaded_file', filename=food.image) }}" alt="{{ food.name }}" style="max-width: 100%; border-radius: 14px; border: 1px solid var(--border);">
+                        </div>
+                    {% endif %}
+                    <input type="file" id="image" name="image" accept="image/*">
+                    <small style="color: var(--text-muted);">Leave blank to keep the current image.</small>
+                </div>
+
+                <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
+
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Payment & Verification</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="form-group">
+                        <label for="payment_method">Payment Method</label>
+                        <select id="payment_method" name="payment_method">
+                            <option value="online" {% if food.payment_method == 'online' %}selected{% endif %}>Online (UPI / QR)</option>
+                            <option value="offline" {% if food.payment_method == 'offline' %}selected{% endif %}>Offline / At Pickup</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="verification_code">Secret Verification Code</label>
+                        <input type="text" id="verification_code" name="verification_code" value="{{ food.verification_code }}" required>
+                        <small style="color: var(--text-muted);">Share this code with the volunteer only at pickup.</small>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="form-group">
+                        <label for="upi_id">UPI ID (If Online)</label>
+                        <input type="text" id="upi_id" name="upi_id" value="{{ food.upi_id }}" placeholder="yourname@upi">
+                    </div>
+                    <div class="form-group">
+                        <label for="qr_code">Payment QR Code (Optional)</label>
+                        <input type="file" id="qr_code" name="qr_code" accept="image/*">
+                        <small style="color: var(--text-muted);">Upload only if you want to change the QR image.</small>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1.5rem; margin-top: 3rem;">
+                    <button type="submit" class="btn-primary" style="flex: 1;">Save Changes</button>
+                    <a href="{{ url_for('view_food') }}" class="btn-outline" style="text-align: center;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

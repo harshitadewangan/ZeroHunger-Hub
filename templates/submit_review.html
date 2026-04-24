@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Write a Review — ZeroHungerHub{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/reviews.css') }}">
+<meta name="description" content="Share your experience as a donor or volunteer on ZeroHungerHub.">
+{% endblock %}
+
+{% block content %}
+<div class="submit-review-wrapper">
+
+    <!-- Breadcrumb -->
+    <p style="color:#64748b; font-size:0.9rem; margin-bottom:1.5rem;">
+        <a href="{{ url_for('reviews') }}" style="color:#10b981; font-weight:600;">
+            <i class="fas fa-arrow-left" style="margin-right:0.4rem;"></i>Community Reviews
+        </a>
+        &nbsp;/&nbsp; Write a Review
+    </p>
+
+    <div class="submit-review-card">
+        <h2><i class="fas fa-pen-nib" style="color:#10b981; margin-right:0.5rem;"></i>Share Your Experience</h2>
+        <p class="subtitle">
+            Posting as <strong>{{ session.get('user_name') }}</strong>
+            &nbsp;·&nbsp;
+            <span class="role-badge {{ session.get('role') }}" style="font-size:0.8rem; vertical-align:middle;">
+                {% if session.get('role') == 'donor' %}
+                    <i class="fas fa-hand-holding-heart"></i> Donor
+                {% else %}
+                    <i class="fas fa-hands-helping"></i> Volunteer
+                {% endif %}
+            </span>
+        </p>
+
+        <form method="POST" action="{{ url_for('submit_review') }}" id="review-form" novalidate>
+
+            <!-- ── Star picker ── -->
+            <div class="form-group" style="margin-bottom:0.25rem;">
+                <label style="font-weight:600; color:#0f172a; display:block; margin-bottom:0.75rem;">
+                    ⭐ Your Rating <span style="color:#ef4444;">*</span>
+                </label>
+
+                <div class="star-picker" id="star-picker" role="radiogroup" aria-label="Rating">
+                    {% for val in [5, 4, 3, 2, 1] %}
+                    <input type="radio" id="star{{ val }}" name="rating" value="{{ val }}"
+                           {% if val == 5 %}required{% endif %}>
+                    <label for="star{{ val }}" title="{{ val }} star{% if val > 1 %}s{% endif %}">&#9733;</label>
+                    {% endfor %}
+                </div>
+                <p class="star-picker-hint" id="star-hint">Click to rate your experience</p>
+            </div>
+
+            <!-- ── Review text ── -->
+            <div class="form-group" style="margin-bottom:0.25rem;">
+                <label for="review-content" style="font-weight:600; color:#0f172a; display:block; margin-bottom:0.75rem;">
+                    📝 Your Review <span style="color:#ef4444;">*</span>
+                </label>
+                <textarea
+                    id="review-content"
+                    name="content"
+                    class="review-textarea"
+                    placeholder="Tell the community about your experience — what went well, how it made you feel, and why you'd recommend ZeroHungerHub…"
+                    maxlength="1000"
+                    required
+                ></textarea>
+                <p class="char-counter"><span id="char-count">0</span> / 1000 characters</p>
+            </div>
+
+            <!-- ── Submit ── -->
+            <button type="submit" class="btn-submit-review" id="btn-submit-review">
+                <i class="fas fa-paper-plane"></i> Post Review
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Character counter
+const textarea = document.getElementById('review-content');
+const counter  = document.getElementById('char-count');
+textarea.addEventListener('input', () => {
+    counter.textContent = textarea.value.length;
+    counter.style.color = textarea.value.length > 900 ? '#ef4444' : '#94a3b8';
+});
+
+// Star-picker hint labels
+const hints = {1:'Poor',2:'Fair',3:'Good',4:'Very Good',5:'Excellent'};
+document.querySelectorAll('.star-picker input').forEach(radio => {
+    radio.addEventListener('change', () => {
+        document.getElementById('star-hint').textContent =
+            hints[radio.value] + ' — ' + radio.value + ' star' + (radio.value > 1 ? 's' : '');
+    });
+});
+
+// Client-side guard: prevent empty submit
+document.getElementById('review-form').addEventListener('submit', function(e) {
+    const content = textarea.value.trim();
+    const rated   = document.querySelector('.star-picker input:checked');
+    if (!content) {
+        e.preventDefault();
+        textarea.focus();
+        textarea.style.borderColor = '#ef4444';
+        return;
+    }
+    if (!rated) {
+        e.preventDefault();
+        document.getElementById('star-hint').textContent = 'Please select a rating!';
+        document.getElementById('star-hint').style.color = '#ef4444';
+    }
+});
+</script>
+{% endblock %}

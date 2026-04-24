@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Donation History - ZeroHungerHub{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar animate-up">
+        <h3 style="margin-bottom: 2rem; font-size: 1.2rem; color: var(--secondary);">Donor Menu</h3>
+        <nav>
+            <a href="{{ url_for('donor_dashboard') }}" class="sidebar-link">
+                <i class="fas fa-chart-line"></i> Overview
+            </a>
+            <a href="{{ url_for('add_food') }}" class="sidebar-link">
+                <i class="fas fa-plus-circle"></i> Post Surplus
+            </a>
+            <a href="{{ url_for('view_food') }}" class="sidebar-link">
+                <i class="fas fa-list"></i> My Listings
+            </a>
+            <a href="{{ url_for('donor_history') }}" class="sidebar-link active">
+                <i class="fas fa-history"></i> Donation History
+            </a>
+            <a href="{{ url_for('profile') }}" class="sidebar-link">
+                <i class="fas fa-user-gear"></i> Profile Settings
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main animate-up" style="animation-delay: 0.1s;">
+        <header style="margin-bottom: 3rem;">
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Donation <span class="text-primary">History</span></h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 0;">Track your past shares and upcoming collections.</p>
+        </header>
+
+        {% if not history %}
+            <div class="glass-card" style="text-align: center; padding: 5rem 2rem;">
+                <i class="fas fa-history" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 2rem;"></i>
+                <h2>No history yet.</h2>
+                <p style="color: var(--text-muted);">Your collective impacts will appear here as soon as volunteers book your surplus.</p>
+                <a href="{{ url_for('add_food') }}" class="btn-primary" style="margin-top: 2rem;">Share Something Now</a>
+            </div>
+        {% else %}
+            <div class="data-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Food Item</th>
+                            <th>Volunteer / Buyer</th>
+                            <th>Contact Info</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in history %}
+                        <tr>
+                            <td>
+                                <strong style="color: var(--secondary); font-size: 1rem;">{{ item[0] }}</strong>
+                            </td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div style="width: 35px; height: 35px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-user" style="color: var(--primary); font-size: 0.8rem;"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600;">{{ item[1] }}</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);">{{ item[3] }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span style="font-size: 0.9rem; color: var(--text-muted);"><i class="fas fa-phone-alt"></i> {{ item[2] }}</span>
+                            </td>
+                            <td>
+                                <span style="text-transform: uppercase; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 800; 
+                                {% if item[4] == 'completed' %} background: #dcfce7; color: #166534; {% elif item[4] == 'booked' %} background: #fef9c3; color: #854d0e; {% else %} background: #f1f5f9; color: #475569; {% endif %}">
+                                    {{ item[4] }}
+                                </span>
+                            </td>
+                            <td>
+                                <span style="text-transform: capitalize; font-size: 0.85rem; font-weight: 600;">
+                                    {{ item[5] }}
+                                </span>
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="#" style="color: var(--primary); font-weight: 700; font-size: 0.85rem;">View Details</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

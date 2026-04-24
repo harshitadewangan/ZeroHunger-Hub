@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}Marketplace - ZeroHungerHub{% endblock %}
+
+{% block content %}
+<style>
+.tab-link {
+    padding: 0.5rem 1rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+.tab-link:hover {
+    color: var(--primary);
+}
+.tab-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+}
+.status-pending {
+    background: #fef3c7;
+    color: #f59e0b;
+}
+.status-accepted {
+    background: #d1fae5;
+    color: #10b981;
+}
+</style>
+<div class="dashboard-grid">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar animate-up">
+        <h3 style="margin-bottom: 2rem; font-size: 1.2rem; color: var(--secondary);">Marketplace Filter</h3>
+        <form method="GET" action="{{ url_for('volunteer_dashboard') }}">
+            <input type="hidden" name="view" value="{{ view }}">
+            <div class="form-group">
+                <label for="location">📍 Search Location</label>
+                <input type="text" id="location" name="location" value="{{ location }}" placeholder="Nearest City...">
+            </div>
+            <div class="form-group">
+                <label for="filter">💰 Price Type</label>
+                <select id="filter" name="filter">
+                    <option value="all" {% if filter == 'all' %}selected{% endif %}>All Listings</option>
+                    <option value="free" {% if filter == 'free' %}selected{% endif %}>Free Only</option>
+                    <option value="paid" {% if filter == 'paid' %}selected{% endif %}>Paid / Low Cost</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">Apply Filter</button>
+        </form>
+
+        <nav style="margin-top: 3rem;">
+            <a href="{{ url_for('order_history') }}" class="sidebar-link">
+                <i class="fas fa-box-open"></i> My Orders
+            </a>
+            <a href="{{ url_for('profile') }}" class="sidebar-link">
+                <i class="fas fa-user-circle"></i> Profile
+            </a>
+            <a href="{{ url_for('logout') }}" class="sidebar-link" style="margin-top: 2rem; color: #ef4444;">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main animate-up" style="animation-delay: 0.1s;">
+        <!-- Tabs -->
+        <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border);">
+            <nav style="display: flex; gap: 2rem;">
+                <a href="{{ url_for('volunteer_dashboard', view='available', filter=filter, location=location) }}" 
+                   class="tab-link {% if view == 'available' %}active{% endif %}">
+                    <i class="fas fa-utensils"></i> Available Food
+                </a>
+                <a href="{{ url_for('volunteer_dashboard', view='booked', filter=filter, location=location) }}" 
+                   class="tab-link {% if view == 'booked' %}active{% endif %}">
+                    <i class="fas fa-shopping-cart"></i> Booked Food
+                </a>
+            </nav>
+        </div>
+
+        <header style="margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Hunger <span class="text-primary">Marketplace</span></h1>
+                <p id="market-description" style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 0;">
+                    {% if view == 'available' %}
+                        Browse fresh surplus food available in your community.
+                    {% else %}
+                        Your booked food items.
+                    {% endif %}
+                </p>
+            </div>
+            <div style="background: white; padding: 0.5rem 1rem; border-radius: 12px; border: 1px solid var(--border);">
+                <i class="fas fa-info-circle" style="color: var(--primary); margin-right: 0.5rem;"></i>
+                <span id="listing-count" style="font-size: 1rem; font-weight: 500;">
+                    {% if view == 'available' %}
+                        {{ foods|length }} Available Listings
+                    {% else %}
+                        {{ foods|length }} Booked Items
+                    {% endif %}
+                </span>
+                <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;" id="volunteer-last-updated">Last updated just now</div>
+            </div>
+        </header>
+
+        <div id="food-list-container">
+            {% if not foods %}
+                <div class="glass-card" style="text-align: center; padding: 5rem 2rem;">
+                    <i class="fas fa-search" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 2rem;"></i>
+                    <h2>No listings found.</h2>
+                    <p style="color: var(--text-muted);">Try adjusting your search or filter settings to find more results.</p>
+                    <a href="{{ url_for('volunteer_dashboard') }}" class="btn-primary" style="margin-top: 2rem;">Reset Filters</a>
+                </div>
+            {% else %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem;">
+                {% for food in foods %}
+                    <div class="glass-card" style="padding: 0; overflow: hidden; border: none; display: flex; flex-direction: column;">
+                        <div style="height: 200px; overflow: hidden; background: #f1f5f9; position: relative;">
+                            {% if food.image %}
+                                <img src="{{ url_for('uploaded_file', filename=food.image) }}" alt="{{ food.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                                    <i class="fas fa-image" style="font-size: 3rem;"></i>
+                                </div>
+                            {% endif %}
+                            <div style="position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.6); color: white; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; backdrop-filter: blur(4px);">
+                                {{ food.location }}
+                            </div>
+                        </div>
+                        <div style="padding: 2rem; flex: 1; display: flex; flex-direction: column;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h3 style="font-size: 1.25rem;">{{ food.name }}</h3>
+                                <span style="font-size: 1.1rem; font-weight: 800; color: var(--primary);">
+                                    {% if food.price == 0 %}FREE{% else %}₹{{ food.price }}{% endif %}
+                                </span>
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; flex: 1;">
+                                <i class="fas fa-weight-hanging" style="margin-right: 0.5rem;"></i> {{ food.quantity }} Surplus <br>
+                                <i class="fas fa-hourglass-half" style="margin-right: 0.5rem; color: #f59e0b;"></i> Best before: {{ food.expiry }}
+                            </p>
+                            {% if view == 'available' %}
+                                <a href="{{ url_for('food_details', food_id=food.id) }}" class="btn-primary" style="text-align: center;">Book Now</a>
+                            {% else %}
+                                <div style="text-align: center;">
+                                    <span class="status-badge status-{{ food.booking_status|lower }}">
+                                        {% if food.booking_status == 'pending' %}
+                                            Pending Approval
+                                        {% elif food.booking_status == 'accepted' %}
+                                            Accepted
+                                        {% else %}
+                                            {{ food.booking_status|title }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentView = urlParams.get('view') || 'available';
+    let currentFilter = urlParams.get('filter') || 'all';
+    let currentLocation = urlParams.get('location') || '';
+
+    function updateFoods() {
+        const params = new URLSearchParams({
+            view: currentView,
+            filter: currentFilter,
+            location: currentLocation
+        });
+        fetch('/api/volunteer_dashboard?' + params, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) return;
+            const foods = data.foods;
+            const container = document.querySelector('#food-list-container');
+            if (!container) return;
+            if (foods.length === 0) {
+                container.innerHTML = `
+                    <div class="glass-card" style="text-align: center; padding: 5rem 2rem;">
+                        <i class="fas fa-search" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 2rem;"></i>
+                        <h2>No listings found.</h2>
+                        <p style="color: var(--text-muted);">Try adjusting your search or filter settings to find more results.</p>
+                        <a href="${window.location.pathname}" class="btn-primary" style="margin-top: 2rem;">Reset Filters</a>
+                    </div>
+                `;
+            } else {
+                let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem;">';
+                foods.forEach(food => {
+                    html += `
+                        <div class="glass-card" style="padding: 0; overflow: hidden; border: none; display: flex; flex-direction: column;">
+                            <div style="height: 200px; overflow: hidden; background: #f1f5f9; position: relative;">
+                                ${food.image ? `<img src="/uploads/${food.image}" alt="${food.name}" style="width: 100%; height: 100%; object-fit: cover;">` : 
+                                  `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #94a3b8;"><i class="fas fa-image" style="font-size: 3rem;"></i></div>`}
+                                <div style="position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.6); color: white; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; backdrop-filter: blur(4px);">
+                                    ${food.location}
+                                </div>
+                            </div>
+                            <div style="padding: 2rem; flex: 1; display: flex; flex-direction: column;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                    <h3 style="font-size: 1.25rem;">${food.name}</h3>
+                                    <span style="font-size: 1.1rem; font-weight: 800; color: var(--primary);">
+                                        ${food.price == 0 ? 'FREE' : '₹' + food.price}
+                                    </span>
+                                </div>
+                                <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; flex: 1;">
+                                    <i class="fas fa-weight-hanging" style="margin-right: 0.5rem;"></i> ${food.quantity} Surplus <br>
+                                    <i class="fas fa-hourglass-half" style="margin-right: 0.5rem; color: #f59e0b;"></i> Best before: ${food.expiry}
+                                </p>
+                                ${currentView === 'available' ? 
+                                    `<a href="/food_details/${food.id}" class="btn-primary" style="text-align: center;">Book Now</a>` :
+                                    `<div style="text-align: center;">
+                                        <span class="status-badge status-${food.booking_status.toLowerCase()}">
+                                            ${food.booking_status === 'pending' ? 'Pending Approval' : food.booking_status === 'accepted' ? 'Accepted' : food.booking_status}
+                                        </span>
+                                    </div>`
+                                }
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            }
+            const countEl = document.querySelector('#listing-count');
+            if (countEl) {
+                countEl.textContent = foods.length + (currentView === 'available' ? ' Available Listings' : ' Booked Items');
+            }
+            const descriptionEl = document.querySelector('#market-description');
+            if (descriptionEl) {
+                descriptionEl.textContent = currentView === 'available' ? 'Browse fresh surplus food available in your community.' : 'Your booked food items.';
+            }
+            const lastUpdated = document.querySelector('#volunteer-last-updated');
+            if (lastUpdated) {
+                const now = new Date();
+                lastUpdated.textContent = `Last updated ${now.toLocaleTimeString()}`;
+            }
+        })
+        .catch(error => {
+            console.error('Volunteer dashboard update failed:', error);
+        });
+    }
+
+    function syncUrlState() {
+        const params = new URLSearchParams();
+        params.set('view', currentView);
+        params.set('filter', currentFilter);
+        if (currentLocation) params.set('location', currentLocation);
+        window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+    }
+
+    updateFoods();
+    setInterval(updateFoods, 5000);
+
+    // Handle tab clicks
+    document.querySelectorAll('.tab-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            currentView = this.href.includes('view=booked') ? 'booked' : 'available';
+            syncUrlState();
+            updateFoods();
+            document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            const headerP = document.querySelector('.dashboard-main header p');
+            if (headerP) {
+                headerP.textContent = currentView === 'available' ? 'Browse fresh surplus food available in your community.' : 'Your booked food items.';
+            }
+        });
+    });
+
+    // Handle filter form
+    const filterForm = document.querySelector('form');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            currentFilter = formData.get('filter') || 'all';
+            currentLocation = formData.get('location') || '';
+            syncUrlState();
+            updateFoods();
+        });
+    }
+});
+</script>
+
+{% endblock %}

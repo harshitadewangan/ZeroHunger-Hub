@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to ZeroHungerHub - Share Food, Save Lives{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-container animate-up">
+        <div class="hero-content">
+            <h1 class="mb-2">Connecting surplus food to <span class="text-primary">those who need it most.</span></h1>
+            <p>A professional platform designed to bridge the gap between food donors and volunteers, creating a sustainable and zero-hunger community.</p>
+            
+            <div style="display: flex; gap: 1.5rem;">
+                <a href="{{ url_for('signup') }}" class="btn-primary">Get Started Now</a>
+                <a href="#mission" class="btn-outline">Our Mission</a>
+            </div>
+            
+            <div style="margin-top: 4rem; display: flex; gap: 3rem;">
+                <div>
+                    <h3 style="font-size: 2.5rem;">{{ active_donors }}</h3>
+                    <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">Active Donors</span>
+                </div>
+                <div>
+                    <h3 style="font-size: 2.5rem;">{{ meals_shared }}</h3>
+                    <span style="color: var(--text_muted); font-size: 0.9rem; font-weight: 500;">Meals Shared</span>
+                </div>
+                <div>
+                    <h3 style="font-size: 2.5rem;">Zero</h3>
+                    <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">Waste Goal</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-image-wrapper">
+            <img src="{{ url_for('static', filename='img/hero.png') }}" alt="Community sharing food" class="hero-image">
+            <div class="hero-badge">
+                <i class="fas fa-check-circle" style="color: var(--primary); font-size: 2rem;"></i>
+                <div>
+                    <strong style="display: block; font-size: 1.1rem; color: var(--secondary);">Verified Impact</strong>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">Trusted by local communities.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="mission" style="padding: 10rem 0; background: white;">
+    <div style="width: min(var(--container-max), 100% - 2rem); margin: 0 auto; text-align: center;">
+        <span style="color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; font-size: 0.9rem;">How it works</span>
+        <h2 style="margin-top: 1rem;">Simple. Impactful. Digital.</h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 3rem; margin-top: 5rem;">
+            <div class="glass-card" style="text-align: left;">
+                <div style="width: 60px; height: 60px; background: #ecfdf5; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+                    <i class="fas fa-box-open" style="color: var(--primary); font-size: 1.5rem;"></i>
+                </div>
+                <h3>Post Surplus</h3>
+                <p style="font-size: 1rem; margin-top: 1rem;">Donors can easily list surplus food with photos, location, and expiry details.</p>
+            </div>
+            
+            <div class="glass-card" style="text-align: left;">
+                <div style="width: 60px; height: 60px; background: #fffbeb; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+                    <i class="fas fa-search-location" style="color: var(--accent); font-size: 1.5rem;"></i>
+                </div>
+                <h3>Find & Book</h3>
+                <p style="font-size: 1rem; margin-top: 1rem;">Volunteers browse nearby listings and book collections in real-time.</p>
+            </div>
+            
+            <div class="glass-card" style="text-align: left;">
+                <div style="width: 60px; height: 60px; background: #eef2ff; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+                    <i class="fas fa-qrcode" style="color: #4f46e5; font-size: 1.5rem;"></i>
+                </div>
+                <h3>Verify Delivery</h3>
+                <p style="font-size: 1rem; margin-top: 1rem;">Securely complete the exchange using digital verification codes.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 10rem 0; background: #f8fafc;">
+    <div style="width: min(var(--container-max), 100% - 2rem); margin: 0 auto; background: var(--secondary); border-radius: var(--radius-lg); padding: 5rem; display: flex; justify-content: space-between; align-items: center; color: white;">
+        <div style="max-width: 600px;">
+            <h2 style="color: white; margin-bottom: 1.5rem;">Ready to make a difference?</h2>
+            <p style="color: #94a3b8; font-size: 1.2rem;">Join the growing network of donors and volunteers today. Together, we can ensure no meal goes to waste.</p>
+        </div>
+        <div>
+            <a href="{{ url_for('signup') }}" class="btn-primary" style="padding: 1.25rem 3rem;">Create Free Account</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

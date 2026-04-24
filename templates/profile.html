@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - ZeroHungerHub{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Sidebar (Context Sensitive) -->
+    <aside class="dashboard-sidebar animate-up">
+        <h3 style="margin-bottom: 2rem; font-size: 1.2rem; color: var(--secondary);">Settings</h3>
+        <nav>
+            {% if session.get('role') == 'donor' %}
+                <a href="{{ url_for('donor_dashboard') }}" class="sidebar-link">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </a>
+            {% else %}
+                <a href="{{ url_for('volunteer_dashboard') }}" class="sidebar-link">
+                    <i class="fas fa-search"></i> Marketplace
+                </a>
+            {% endif %}
+            <a href="{{ url_for('profile') }}" class="sidebar-link active">
+                <i class="fas fa-user-circle"></i> Profile Settings
+            </a>
+            <a href="{{ url_for('logout') }}" class="sidebar-link" style="margin-top: 2rem; color: #ef4444;">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main animate-up" style="animation-delay: 0.1s;">
+        <header style="margin-bottom: 3rem;">
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Account <span class="text-primary">Profile</span></h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 0;">Manage your personal information and contact details.</p>
+        </header>
+
+        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 3rem;">
+            <!-- Profile Overview -->
+            <div class="glass-card" style="text-align: center;">
+                <div style="width: 120px; height: 120px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; border: 4px solid var(--primary);">
+                    <i class="fas fa-user" style="color: var(--primary); font-size: 4rem;"></i>
+                </div>
+                <h2 style="margin-bottom: 0.5rem;">{{ user[0] }}</h2>
+                <span style="background: #f0fdf4; color: var(--primary); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase;">
+                    Verified {{ session.get('role') }}
+                </span>
+                
+                <div style="margin-top: 3rem; text-align: left; padding: 0 1rem;">
+                    <div style="margin-bottom: 1.5rem;">
+                        <span style="display: block; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; font-weight: 700;">Email Address</span>
+                        <span style="font-weight: 600; font-size: 1rem;">{{ user[1] }}</span>
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <span style="display: block; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; font-weight: 700;">Location</span>
+                        <span style="font-weight: 600; font-size: 1rem;">{{ user[2] or 'Not specified' }}</span>
+                    </div>
+                    <div>
+                        <span style="display: block; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; font-weight: 700;">Contact</span>
+                        <span style="font-weight: 600; font-size: 1rem;">{{ user[3] or 'Not specified' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Profile Form -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 2rem;">Update Information</h3>
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" value="{{ user[0] }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" value="{{ user[1] }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location">Your Location</label>
+                        <input type="text" id="location" name="location" value="{{ user[2] }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact">Contact Number</label>
+                        <input type="text" id="contact" name="contact" value="{{ user[3] }}">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" style="margin-top: 2rem; width: 100%;">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

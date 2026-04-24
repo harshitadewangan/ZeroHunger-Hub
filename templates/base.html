@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ZeroHungerHub - Food Waste Reduction{% endblock %}</title>
+    
+    <!-- Professional Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Modern Design System -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern.css') }}">
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    <style>
+        .notif-dropdown.show { display: block !important; }
+        .notif-item { position: relative; }
+        .notif-item .notif-delete-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #c2410c;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+        .notif-item .notif-delete-btn:hover { color: #991b1b; }
+        .notif-actions { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; gap: 1rem; }
+        .notif-clear-btn {
+            border: none;
+            background: #eef2ff;
+            color: #1d4ed8;
+            border-radius: 999px;
+            padding: 0.45rem 0.85rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="logo">
+                <i class="fas fa-hand-holding-heart"></i>
+                ZeroHunger<span>Hub</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('reviews') }}" class="nav-link" id="nav-reviews">Reviews</a>
+                {% if session.get('user_id') %}
+                    <div class="notif-wrapper" style="position: relative; display: inline-block;">
+                        <a href="#" class="nav-link" id="notif-btn">
+                            <i class="fas fa-bell"></i>
+                            {% if unread_count > 0 %}
+                                <span class="badge" id="notif-badge" style="position: absolute; top: 0px; right: -5px; background: #ef4444; color: white; border-radius: 50%; font-size: 0.7rem; padding: 2px 5px;">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                        <div class="notif-dropdown" id="notif-dropdown" style="display: none; position: absolute; right: 0; top: 100%; width: 300px; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 8px; z-index: 1000; overflow: hidden; margin-top: 10px;">
+                                    <div class="notif-actions">
+                                <div style="font-weight: 600; color: #334155;">Notifications</div>
+                                <button id="clear-notifications-btn" class="notif-clear-btn">Clear All</button>
+                            </div>
+                            <div style="border-bottom: 1px solid #e2e8f0;"></div>
+                            {% if notifications %}
+                                {% for n in notifications %}
+                                    <div class="notif-item" data-notif-id="{{ n.id }}" style="display: block; padding: 12px 15px; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 0.9rem; {% if not n.is_read %}background: #f0fdf4; font-weight: 500;{% endif %}">
+                                        <a href="{{ n.link or '#' }}" style="text-decoration: none; color: inherit; display: block;">
+                                            {{ n.message }}
+                                            <div class="notif-time" style="font-size: 0.75rem; color: #94a3b8; margin-top: 5px;">{{ n.created_at }}</div>
+                                        </a>
+                                        <button type="button" class="notif-delete-btn" data-notif-id="{{ n.id }}" aria-label="Delete notification">×</button>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="notif-item" style="padding: 15px; text-align: center; color: #94a3b8; font-size: 0.9rem;">No new notifications.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if session.get('role') == 'donor' %}
+                        <a href="{{ url_for('donor_dashboard') }}" class="nav-link">Dashboard</a>
+                    {% else %}
+                        <a href="{{ url_for('volunteer_dashboard') }}" class="nav-link">Marketplace</a>
+                    {% endif %}
+                    <a href="{{ url_for('my_reviews') }}" class="nav-link" id="nav-my-reviews">My Reviews</a>
+                    <a href="{{ url_for('profile') }}" class="nav-link">Profile</a>
+                    <a href="{{ url_for('logout') }}" class="btn-nav">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+                    <a href="{{ url_for('signup') }}" class="btn-nav">Join Now</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div style="max-width: var(--container-max); margin: 1rem auto; padding: 0 1rem;">
+                {% for message in messages %}
+                    <div style="background: #f0fdf4; border-left: 4px solid var(--primary); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; color: var(--primary-hover); font-weight: 500; box-shadow: var(--shadow-soft);">
+                        <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer style="padding: 4rem 0; background: var(--secondary); color: white; margin-top: 6rem;">
+        <div style="width: min(var(--container-max), 100% - 2rem); margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 3rem;">
+            <div>
+                <a href="#" class="logo" style="color: var(--primary); margin-bottom: 1.5rem;">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    ZeroHunger<span>Hub</span>
+                </a>
+                <p style="color: #94a3b8; font-size: 0.9rem;">Connecting surplus food to those in need. Let's create a world with zero hunger together.</p>
+            </div>
+            <div>
+                <h4 style="color: white; margin-bottom: 1.5rem;">Quick Links</h4>
+                <ul style="list-style: none; display: grid; gap: 0.5rem; color: #94a3b8;">
+                    <li><a href="#" style="color: inherit;">Mission</a></li>
+                    <li><a href="#" style="color: inherit;">Community</a></li>
+                    <li><a href="#" style="color: inherit;">Donors</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="color: white; margin-bottom: 1.5rem;">Support</h4>
+                <ul style="list-style: none; display: grid; gap: 0.5rem; color: #94a3b8;">
+                    <li><a href="#" style="color: inherit;">Help Center</a></li>
+                    <li><a href="#" style="color: inherit;">Terms of Service</a></li>
+                    <li><a href="#" style="color: inherit;">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 4rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 2rem; color: #64748b; font-size: 0.85rem;">
+            &copy; 2026 ZeroHungerHub. Professional Final Year Project. Designed with <i class="fas fa-heart" style="color: #ef4444;"></i>
+        </div>
+    </footer>
+</body>
+</html>

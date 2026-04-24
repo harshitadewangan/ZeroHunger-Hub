@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Order History - ZeroHungerHub{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar animate-up">
+        <h3 style="margin-bottom: 2rem; font-size: 1.2rem; color: var(--secondary);">Volunteer Menu</h3>
+        <nav>
+            <a href="{{ url_for('volunteer_dashboard') }}" class="sidebar-link">
+                <i class="fas fa-search"></i> Marketplace
+            </a>
+            <a href="{{ url_for('order_history') }}" class="sidebar-link active">
+                <i class="fas fa-box-open"></i> My Orders
+            </a>
+            <a href="{{ url_for('profile') }}" class="sidebar-link">
+                <i class="fas fa-user-circle"></i> Profile
+            </a>
+            <a href="{{ url_for('logout') }}" class="sidebar-link" style="margin-top: 2rem; color: #ef4444;">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main animate-up" style="animation-delay: 0.1s;">
+        <header style="margin-bottom: 3rem;">
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Collection <span class="text-primary">History</span></h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 0;">Track your booked and collected food items.</p>
+        </header>
+
+        {% if not orders %}
+            <div class="glass-card" style="text-align: center; padding: 5rem 2rem;">
+                <i class="fas fa-box-open" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 2rem;"></i>
+                <h2>No orders yet.</h2>
+                <p style="color: var(--text-muted);">Browse the marketplace to find and book your first surplus food collection.</p>
+                <a href="{{ url_for('volunteer_dashboard') }}" class="btn-primary" style="margin-top: 2rem;">Browse Marketplace</a>
+            </div>
+        {% else %}
+            <div class="data-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Food Item</th>
+                            <th>Status</th>
+                            <th>Payment Status</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>
+                                <strong style="color: var(--secondary); font-size: 1rem;">{{ order.name }}</strong>
+                            </td>
+                            <td>
+                                <span style="text-transform: uppercase; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 800; 
+                                {% if order.status == 'completed' %} background: #dcfce7; color: #166534; {% elif order.status == 'accepted' %} background: #dbeafe; color: #1e40af; {% elif order.status == 'pending' %} background: #fef9c3; color: #854d0e; {% else %} background: #fee2e2; color: #991b1b; {% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <span style="text-transform: capitalize; font-size: 0.85rem; font-weight: 600;">
+                                    {{ order.payment_status }}
+                                </span>
+                            </td>
+                            <td style="text-align: right;">
+                                {% if order.status == 'accepted' %}
+                                    <form action="{{ url_for('complete_booking', booking_id=order.id) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn-primary" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Complete Order</button>
+                                    </form>
+                                {% else %}
+                                    <a href="#" style="color: var(--primary); font-weight: 700; font-size: 0.85rem;">View Receipt</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Post Surplus Food - ZeroHungerHub{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Sidebar (Consistent with Donor Dashboard) -->
+    <aside class="dashboard-sidebar animate-up">
+        <h3 style="margin-bottom: 2rem; font-size: 1.2rem; color: var(--secondary);">Donor Menu</h3>
+        <nav>
+            <a href="{{ url_for('donor_dashboard') }}" class="sidebar-link">
+                <i class="fas fa-chart-line"></i> Overview
+            </a>
+            <a href="{{ url_for('add_food') }}" class="sidebar-link active">
+                <i class="fas fa-plus-circle"></i> Post Surplus
+            </a>
+            <a href="{{ url_for('view_food') }}" class="sidebar-link">
+                <i class="fas fa-list"></i> My Listings
+            </a>
+            <a href="{{ url_for('donor_history') }}" class="sidebar-link">
+                <i class="fas fa-history"></i> Donation History
+            </a>
+            <a href="{{ url_for('profile') }}" class="sidebar-link">
+                <i class="fas fa-user-gear"></i> Profile Settings
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main animate-up" style="animation-delay: 0.1s;">
+        <header style="margin-bottom: 3rem;">
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Create <span class="text-primary">New Listing</span></h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 0;">Fill in the details about the surplus food you wish to share.</p>
+        </header>
+
+        <div class="glass-card" style="max-width: 800px;">
+            <form method="POST" enctype="multipart/form-data">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="form-group">
+                        <label for="name"><i class="fas fa-utensils" style="margin-right: 0.5rem; color: var(--primary);"></i> Food Item Name</label>
+                        <input type="text" id="name" name="name" placeholder="E.g. Fresh Garden Salad" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quantity"><i class="fas fa-weight" style="margin-right: 0.5rem; color: var(--primary);"></i> Quantity / Portions</label>
+                        <input type="text" id="quantity" name="quantity" placeholder="E.g. 5 KG or 10 Portions" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="form-group">
+                        <label for="price"><i class="fas fa-tags" style="margin-right: 0.5rem; color: var(--primary);"></i> Price (₹)</label>
+                        <input type="number" id="price" name="price" step="0.01" value="0.00" required>
+                        <small style="color: var(--text-muted);">Enter 0.00 for free donations.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="expiry"><i class="fas fa-hourglass-end" style="margin-right: 0.5rem; color: var(--primary);"></i> Best Before Date/Time</label>
+                        <input type="text" id="expiry" name="expiry" placeholder="E.g. Today by 8 PM" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="location"><i class="fas fa-map-marker-alt" style="margin-right: 0.5rem; color: var(--primary);"></i> Collection Location</label>
+                    <input type="text" id="location" name="location" placeholder="Full address or area..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="image"><i class="fas fa-camera" style="margin-right: 0.5rem; color: var(--primary);"></i> Food Photo</label>
+                    <input type="file" id="image" name="image" accept="image/*" required>
+                    <small style="color: var(--text-muted);">A clear photo helps volunteers trust your listing.</small>
+                </div>
+
+                <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
+
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Payment & Verification</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="form-group">
+                        <label for="payment_method">Payment Method</label>
+                        <select id="payment_method" name="payment_method">
+                            <option value="online">Online (UPI / QR)</option>
+                            <option value="offline">Offline / At Pickup</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="verification_code">Secret Verification Code</label>
+                        <input type="text" id="verification_code" name="verification_code" placeholder="E.g. FOOD2026" required>
+                        <small style="color: var(--text-muted);">Share this code with the volunteer ONLY at pickup.</small>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="form-group">
+                        <label for="upi_id">UPI ID (If Online)</label>
+                        <input type="text" id="upi_id" name="upi_id" placeholder="yourname@upi">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="qr_code">Payment QR Code (Optional)</label>
+                        <input type="file" id="qr_code" name="qr_code" accept="image/*">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1.5rem; margin-top: 3rem;">
+                    <button type="submit" class="btn-primary" style="flex: 1;">Publish Listing</button>
+                    <a href="{{ url_for('donor_dashboard') }}" class="btn-outline" style="text-align: center;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Food Details - ZeroHungerHub{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar animate-up">
+        <h3 style="margin-bottom: 2rem; font-size: 1.2rem; color: var(--secondary);">Volunteer Menu</h3>
+        <nav>
+            <a href="{{ url_for('volunteer_dashboard') }}" class="sidebar-link active">
+                <i class="fas fa-search"></i> Marketplace
+            </a>
+            <a href="{{ url_for('order_history') }}" class="sidebar-link">
+                <i class="fas fa-box-open"></i> My Orders
+            </a>
+            <a href="{{ url_for('profile') }}" class="sidebar-link">
+                <i class="fas fa-user-circle"></i> Profile
+            </a>
+            <a href="{{ url_for('logout') }}" class="sidebar-link" style="margin-top: 2rem; color: #ef4444;">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main animate-up" style="animation-delay: 0.1s;">
+        <header style="margin-bottom: 3rem; display: flex; align-items: flex-start; justify-content: space-between;">
+            <div>
+                <a href="{{ url_for('volunteer_dashboard') }}" style="color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                    <i class="fas fa-arrow-left"></i> Back to Marketplace
+                </a>
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">{{ food[1] }}</h1>
+                <p style="color: var(--text-muted); font-size: 1.2rem; margin-bottom: 0;">Verified surplus listing from <strong style="color: var(--secondary);">{{ food[9] }}</strong></p>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 2rem; font-weight: 800; color: var(--primary); display: block;">
+                    {% if food[3] == 0 %}FREE{% else %}₹{{ food[3] }}{% endif %}
+                </span>
+                <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600; text-transform: uppercase;">Listing Price</span>
+            </div>
+        </header>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
+            <!-- Food Image -->
+            <div class="glass-card" style="padding: 0; overflow: hidden; border: none; height: 500px;">
+                {% if food[6] %}
+                    <img src="{{ url_for('uploaded_file', filename=food[6]) }}" alt="{{ food[1] }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: #94a3b8;">
+                        <i class="fas fa-image" style="font-size: 6rem;"></i>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Food Info -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 2rem;">Item Information</h3>
+                
+                <div style="display: grid; gap: 2rem;">
+                    <div style="display: flex; gap: 1.5rem;">
+                        <div style="width: 50px; height: 50px; background: #f0fdf4; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-weight-hanging" style="color: var(--primary);"></i>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Quantity Available</span>
+                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary);">{{ food[2] }}</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1.5rem;">
+                        <div style="width: 50px; height: 50px; background: #fffbeb; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-map-marker-alt" style="color: var(--accent);"></i>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Collection Location</span>
+                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary);">{{ food[4] }}</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1.5rem; align-items: center;">
+                        <div style="width: 50px; height: 50px; background: #eef2ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-phone-alt" style="color: #0f766e;"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Contact Number</span>
+                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary);">{{ food[7] or 'Not provided' }}</span>
+                        </div>
+                    </div>
+
+                    {% if food[7] %}
+                    <div style="margin-top: 1rem;">
+                        <a href="tel:{{ food[7] }}" class="btn-primary" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.9rem 1rem;"> 
+                            <i class="fas fa-phone"></i>
+                            Call Donor
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <div style="display: flex; gap: 1.5rem;">
+                        <div style="width: 50px; height: 50px; background: #fef2f2; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-hourglass-half" style="color: #ef4444;"></i>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Best Before</span>
+                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary);">{{ food[5] }}</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1.5rem;">
+                        <div style="width: 50px; height: 50px; background: #eef2ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-credit-card" style="color: #4f46e5;"></i>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Payment Mode</span>
+                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary); text-transform: capitalize;">{{ food[8] }} Exchange</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr style="margin: 2.5rem 0; border: none; border-top: 1px solid var(--border);">
+
+                {% if booking %}
+                    <div style="background: #f0fdf4; border: 1px solid var(--primary); padding: 2rem; border-radius: 16px; text-align: center;">
+                        <i class="fas fa-check-circle" style="color: var(--primary); font-size: 3rem; margin-bottom: 1.5rem;"></i>
+                        <h3 style="margin-bottom: 1rem;">Booking Status</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Status: <strong style="color: var(--primary); text-transform: uppercase;">{{ booking[1] }}</strong></p>
+
+                        {% if booking[1] == 'accepted' and food[3] > 0 and food[8] == 'online' %}
+                            <a href="{{ url_for('payment', booking_id=booking[0]) }}" class="btn-primary" style="width: 100%;">Proceed to Payment</a>
+                        {% elif booking[1] == 'accepted' %}
+                            <p style="font-weight: 600; color: var(--secondary);">Please contact donor at:<br><i class="fas fa-phone-alt"></i> {{ food[7] }}</p>
+                        {% elif booking[1] == 'pending' %}
+                            <p style="font-weight: 600; color: var(--secondary);">Your request is pending donor approval. You will receive an update soon.</p>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <form method="POST" action="{{ url_for('book_confirm', food_id=food[0]) }}">
+                        <button type="submit" class="btn-primary" style="width: 100%; padding: 1.25rem; font-size: 1.2rem;">Book Collection Now</button>
+                    </form>
+                    <p style="text-align: center; margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
+                        <i class="fas fa-shield-alt"></i> Secure collection via digital verification.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const bookForm = document.querySelector('form[action*="book_confirm"]');
+    if (bookForm) {
+        bookForm.addEventListener('submit', function(e) {
+            const btn = bookForm.querySelector('button');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            }
+        });
+    }
+});
+</script>
+
+{% endblock %}
