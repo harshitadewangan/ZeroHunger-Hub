@@ -8,7 +8,7 @@
     <aside class="dashboard-sidebar animate-up">
         <h3 style="margin-bottom: 2rem; font-size: 1.2rem; color: var(--secondary);">Review & Book</h3>
         <nav>
-            <a href="{{ url_for('food_details', food_id=food[0]) }}" class="sidebar-link">
+            <a href="{{ url_for('food_details', food_id=food.id) }}" class="sidebar-link">
                 <i class="fas fa-arrow-left"></i> Back to Details
             </a>
         </nav>
@@ -22,21 +22,21 @@
             </div>
             
             <h1 style="font-size: 2.2rem; margin-bottom: 1rem;">Confirm <span class="text-primary">Booking</span></h1>
-            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2.5rem;">You are about to book: <br> <strong style="color: var(--secondary); font-size: 1.5rem;">{{ food[1] }}</strong></p>
+            <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2.5rem;">You are about to book: <br> <strong style="color: var(--secondary); font-size: 1.5rem;">{{ food.name }}</strong></p>
             
             <div style="background: #f8fafc; border-radius: 12px; border: 1px solid var(--border); padding: 2rem; margin-bottom: 3rem; text-align: left;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
                     <span style="color: var(--text-muted);">Quantity</span>
-                    <strong style="color: var(--secondary);">{{ food[2] }}</strong>
+                    <strong style="color: var(--secondary);">{{ food.quantity }}</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
                     <span style="color: var(--text-muted);">Donor</span>
-                    <strong style="color: var(--secondary);">{{ food[9] }}</strong>
+                    <strong style="color: var(--secondary);">{{ food.donor_name }}</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
                     <span style="color: var(--text-muted);">Price</span>
                     <strong style="color: var(--primary); font-size: 1.25rem;">
-                        {% if food[3] == 0 %}FREE{% else %}₹{{ "%.2f"|format(food[3]) }}{% endif %}
+                        {% if food.price == 0 %}FREE{% else %}₹{{ "%.2f"|format(food.price) }}{% endif %}
                     </strong>
                 </div>
                 <hr style="margin: 1.5rem 0; border: none; border-top: 1px dashed var(--border);">
@@ -45,10 +45,10 @@
                 </p>
             </div>
             
-            <form method="POST" action="{{ url_for('book_food', food_id=food[0]) }}">
+            <form method="POST" action="{{ url_for('book_food', food_id=food.id) }}">
                 <div style="display: grid; gap: 1rem;">
                     <button type="submit" class="btn-primary" style="width: 100%; padding: 1.25rem;">Confirm My Booking</button>
-                    <a href="{{ url_for('food_details', food_id=food[0]) }}" class="btn-outline" style="width: 100%;">Wait, Take Me Back</a>
+                    <a href="{{ url_for('food_details', food_id=food.id) }}" class="btn-outline" style="width: 100%;">Wait, Take Me Back</a>
                 </div>
             </form>
         </div>

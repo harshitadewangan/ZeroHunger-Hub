@@ -128,7 +128,9 @@ def donor_dashboard():
                 'booking_id': str(b['_id']),
                 'food_name': food.get('name'),
                 'volunteer_name': volunteer.get('name'),
-                'status': b.get('status')
+                'status': b.get('status'),
+                'volunteer_contact': volunteer.get('contact'),
+                'volunteer_location': volunteer.get('location')
             })
             
     return render_template('donor_dashboard.html', total_posts=total_posts, completed=completed, pending_requests=pending_requests)
@@ -454,21 +456,38 @@ def api_donor_dashboard():
         pending_bookings = db.bookings.find({'food_id': {'$in': food_ids}, 'status': 'pending'})
         pending_requests = []
         for b in pending_bookings:
-            food = db.food_posts.find_one({'_id': ObjectId(b['food_id'])})
-            volunteer = db.users.find_one({'_id': ObjectId(b['user_id'])})
-            if food and volunteer:
-                pending_requests.append({
-                    'booking_id': str(b['_id']),
-                    'food_name': food.get('name'),
-                    'volunteer_name': volunteer.get('name'),
-                    'status': b.get('status'),
-                    'volunteer_contact': volunteer.get('contact'),
-                    'volunteer_location': volunteer.get('location')
-                })
+            try:
+                food = db.food_posts.find_one({'_id': ObjectId(b['food_id'])})
+                volunteer = db.users.find_one({'_id': ObjectId(b['user_id'])})
+                if food and volunteer:
+                    pending_requests.append({
+                        'booking_id': str(b['_id']),
+                        'food_name': food.get('name'),
+                        'volunteer_name': volunteer.get('name'),
+                        'status': b.get('status'),
+                        'volunteer_contact': volunteer.get('contact'),
+                        'volunteer_location': volunteer.get('location')
+                    })
+            except Exception:
+                continue
+        
+        # Fetch recent reviews from volunteers
+        recent_reviews_docs = list(db.reviews.find({'role': 'volunteer'}).sort('created_at', -1).limit(5))
+        recent_reviews = []
+        for r in recent_reviews_docs:
+            recent_reviews.append({
+                'user_name': r.get('user_name'),
+                'rating': r.get('rating'),
+                'content': r.get('content'),
+                'created_at': r.get('created_at').strftime('%Y-%m-%d %H:%M') if r.get('created_at') else ''
+            })
                 
-        return jsonify({'pending_requests': pending_requests})
+        return jsonify({
+            'pending_requests': pending_requests,
+            'recent_reviews': recent_reviews
+        })
     except Exception as e:
-        return jsonify({'error': str(e), 'pending_requests': []}), 500
+        return jsonify({'error': str(e), 'pending_requests': [], 'recent_reviews': []}), 500
 
 @app.route('/food_details/<food_id>')
 def food_details(food_id):
@@ -840,4 +859,4 @@ def my_reviews():
     return render_template('my_reviews.html', reviews=formatted_reviews)
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

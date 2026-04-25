@@ -33,7 +33,7 @@
             <span>{{ reviews | length }} Review{% if reviews|length != 1 %}s{% endif %} Posted</span>
         </div>
         {% if reviews %}
-        {% set avg = (reviews | map(attribute=2) | sum / reviews|length) | round(1) %}
+        {% set avg = (reviews | map(attribute='rating') | sum / reviews|length) | round(1) %}
         <div class="reviews-stat-pill">
             <i class="fas fa-star"></i>
             <span>Your Avg: {{ avg }} / 5</span>
@@ -59,14 +59,14 @@
 
             <!-- Header -->
             <div class="review-card-header">
-                <div class="review-avatar {{ review[1] }}">
-                    {{ review[0][0] | upper }}
+                <div class="review-avatar {{ review.role }}">
+                    {{ review.user_name[0] | upper }}
                 </div>
                 <div class="review-meta">
-                    <div class="review-meta-name">{{ review[0] }}</div>
+                    <div class="review-meta-name">{{ review.user_name }}</div>
                     <div class="review-meta-sub">
-                        <span class="role-badge {{ review[1] }}">
-                            {% if review[1] == 'donor' %}
+                        <span class="role-badge {{ review.role }}">
+                            {% if review.role == 'donor' %}
                                 <i class="fas fa-hand-holding-heart"></i> Donor
                             {% else %}
                                 <i class="fas fa-hands-helping"></i> Volunteer
@@ -74,21 +74,21 @@
                         </span>
                         <span class="review-date">
                             <i class="fas fa-clock" style="margin-right:3px;"></i>
-                            {{ review[4][:16] | replace('T', ' ') }}
+                            {{ review.created_at.strftime('%Y-%m-%d %H:%M') }}
                         </span>
                     </div>
                 </div>
             </div>
 
             <!-- Stars -->
-            <div class="stars-display" aria-label="{{ review[2] }} out of 5 stars">
+            <div class="stars-display" aria-label="{{ review.rating }} out of 5 stars">
                 {% for i in range(1, 6) %}
-                    <i class="fas fa-star {% if i <= review[2] %}filled{% endif %}"></i>
+                    <i class="fas fa-star {% if i <= review.rating %}filled{% endif %}"></i>
                 {% endfor %}
             </div>
 
             <!-- Content -->
-            <p class="review-content">{{ review[3] }}</p>
+            <p class="review-content">{{ review.content }}</p>
 
         </article>
         {% endfor %}

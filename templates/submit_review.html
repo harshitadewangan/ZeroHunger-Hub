@@ -96,16 +96,25 @@ document.querySelectorAll('.star-picker input').forEach(radio => {
 document.getElementById('review-form').addEventListener('submit', function(e) {
     const content = textarea.value.trim();
     const rated   = document.querySelector('.star-picker input:checked');
+    let hasError  = false;
+
+    // Reset styles
+    textarea.classList.remove('error');
+    document.getElementById('star-hint').classList.remove('error-text');
+
     if (!content) {
         e.preventDefault();
+        textarea.classList.add('error');
         textarea.focus();
-        textarea.style.borderColor = '#ef4444';
-        return;
+        hasError = true;
     }
+
     if (!rated) {
         e.preventDefault();
-        document.getElementById('star-hint').textContent = 'Please select a rating!';
-        document.getElementById('star-hint').style.color = '#ef4444';
+        const hint = document.getElementById('star-hint');
+        hint.textContent = 'Please select a rating to continue!';
+        hint.classList.add('error-text');
+        hasError = true;
     }
 });
 </script>

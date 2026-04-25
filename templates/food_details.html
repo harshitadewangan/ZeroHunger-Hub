@@ -30,12 +30,12 @@
                 <a href="{{ url_for('volunteer_dashboard') }}" style="color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
                     <i class="fas fa-arrow-left"></i> Back to Marketplace
                 </a>
-                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">{{ food[1] }}</h1>
-                <p style="color: var(--text-muted); font-size: 1.2rem; margin-bottom: 0;">Verified surplus listing from <strong style="color: var(--secondary);">{{ food[9] }}</strong></p>
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">{{ food.name }}</h1>
+                <p style="color: var(--text-muted); font-size: 1.2rem; margin-bottom: 0;">Verified surplus listing from <strong style="color: var(--secondary);">{{ food.donor_name }}</strong></p>
             </div>
             <div style="text-align: right;">
                 <span style="font-size: 2rem; font-weight: 800; color: var(--primary); display: block;">
-                    {% if food[3] == 0 %}FREE{% else %}₹{{ food[3] }}{% endif %}
+                    {% if food.price == 0 %}FREE{% else %}₹{{ food.price }}{% endif %}
                 </span>
                 <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600; text-transform: uppercase;">Listing Price</span>
             </div>
@@ -44,8 +44,8 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
             <!-- Food Image -->
             <div class="glass-card" style="padding: 0; overflow: hidden; border: none; height: 500px;">
-                {% if food[6] %}
-                    <img src="{{ url_for('uploaded_file', filename=food[6]) }}" alt="{{ food[1] }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% if food.image %}
+                    <img src="{{ url_for('uploaded_file', filename=food.image) }}" alt="{{ food.name }}" style="width: 100%; height: 100%; object-fit: cover;">
                 {% else %}
                     <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: #94a3b8;">
                         <i class="fas fa-image" style="font-size: 6rem;"></i>
@@ -64,7 +64,7 @@
                         </div>
                         <div>
                             <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Quantity Available</span>
-                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary);">{{ food[2] }}</span>
+                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary);">{{ food.quantity }}</span>
                         </div>
                     </div>
 
@@ -74,7 +74,7 @@
                         </div>
                         <div>
                             <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Collection Location</span>
-                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary);">{{ food[4] }}</span>
+                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary);">{{ food.location }}</span>
                         </div>
                     </div>
 
@@ -84,13 +84,13 @@
                         </div>
                         <div style="flex: 1;">
                             <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Contact Number</span>
-                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary);">{{ food[7] or 'Not provided' }}</span>
+                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary);">{{ food.contact or 'Not provided' }}</span>
                         </div>
                     </div>
 
-                    {% if food[7] %}
+                    {% if food.contact %}
                     <div style="margin-top: 1rem;">
-                        <a href="tel:{{ food[7] }}" class="btn-primary" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.9rem 1rem;"> 
+                        <a href="tel:{{ food.contact }}" class="btn-primary" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.9rem 1rem;"> 
                             <i class="fas fa-phone"></i>
                             Call Donor
                         </a>
@@ -103,7 +103,7 @@
                         </div>
                         <div>
                             <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Best Before</span>
-                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary);">{{ food[5] }}</span>
+                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary);">{{ food.expiry }}</span>
                         </div>
                     </div>
 
@@ -113,7 +113,7 @@
                         </div>
                         <div>
                             <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Payment Mode</span>
-                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary); text-transform: capitalize;">{{ food[8] }} Exchange</span>
+                            <span style="font-weight: 600; font-size: 1.1rem; color: var(--secondary); text-transform: capitalize;">{{ food.payment_method }} Exchange</span>
                         </div>
                     </div>
                 </div>
@@ -124,18 +124,18 @@
                     <div style="background: #f0fdf4; border: 1px solid var(--primary); padding: 2rem; border-radius: 16px; text-align: center;">
                         <i class="fas fa-check-circle" style="color: var(--primary); font-size: 3rem; margin-bottom: 1.5rem;"></i>
                         <h3 style="margin-bottom: 1rem;">Booking Status</h3>
-                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Status: <strong style="color: var(--primary); text-transform: uppercase;">{{ booking[1] }}</strong></p>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Status: <strong style="color: var(--primary); text-transform: uppercase;">{{ booking.status }}</strong></p>
 
-                        {% if booking[1] == 'accepted' and food[3] > 0 and food[8] == 'online' %}
-                            <a href="{{ url_for('payment', booking_id=booking[0]) }}" class="btn-primary" style="width: 100%;">Proceed to Payment</a>
-                        {% elif booking[1] == 'accepted' %}
-                            <p style="font-weight: 600; color: var(--secondary);">Please contact donor at:<br><i class="fas fa-phone-alt"></i> {{ food[7] }}</p>
-                        {% elif booking[1] == 'pending' %}
+                        {% if booking.status == 'accepted' and food.price > 0 and food.payment_method == 'online' %}
+                            <a href="{{ url_for('payment', booking_id=booking.id) }}" class="btn-primary" style="width: 100%;">Proceed to Payment</a>
+                        {% elif booking.status == 'accepted' %}
+                            <p style="font-weight: 600; color: var(--secondary);">Please contact donor at:<br><i class="fas fa-phone-alt"></i> {{ food.contact }}</p>
+                        {% elif booking.status == 'pending' %}
                             <p style="font-weight: 600; color: var(--secondary);">Your request is pending donor approval. You will receive an update soon.</p>
                         {% endif %}
                     </div>
                 {% else %}
-                    <form method="POST" action="{{ url_for('book_confirm', food_id=food[0]) }}">
+                    <form method="POST" action="{{ url_for('book_confirm', food_id=food.id) }}">
                         <button type="submit" class="btn-primary" style="width: 100%; padding: 1.25rem; font-size: 1.2rem;">Book Collection Now</button>
                     </form>
                     <p style="text-align: center; margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">

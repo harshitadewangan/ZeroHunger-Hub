@@ -143,6 +143,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const forms = document.querySelectorAll("form");
     forms.forEach(form => {
         form.addEventListener("submit", (e) => {
+            // If validation failed or something else called preventDefault, don't show loading state
+            if (e.defaultPrevented) return;
+            
             const btn = form.querySelector("button[type='submit']");
             if (btn) {
                 setTimeout(() => {

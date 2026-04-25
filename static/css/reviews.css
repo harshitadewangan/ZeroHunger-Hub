@@ -328,6 +328,16 @@
     margin-bottom: 1.75rem;
 }
 
+.error-text {
+    color: #ef4444 !important;
+    font-weight: 600;
+}
+
+textarea.error {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+}
+
 /* ── Submit button full-width ── */
 .btn-submit-review {
     background: linear-gradient(135deg, #10b981, #059669);

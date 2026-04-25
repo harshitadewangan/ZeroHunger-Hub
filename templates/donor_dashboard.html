@@ -2,6 +2,10 @@
 
 {% block title %}Donor Dashboard - ZeroHungerHub{% endblock %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/reviews.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="dashboard-grid">
     <!-- Sidebar -->
@@ -122,6 +126,16 @@
                 <p style="color: var(--text-muted); margin-bottom: 1.5rem;">View and edit all your active food donations.</p>
                 <a href="{{ url_for('view_food') }}" class="btn-secondary" style="font-weight: 600;"><i class="fas fa-list" style="margin-right: 0.5rem;"></i> View All Listings</a>
             </div>
+        <div class="glass-card" id="community-reviews-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h3 style="margin: 0;">Community Feedback</h3>
+                <span id="reviews-last-updated" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+            </div>
+            <div id="community-reviews-body" class="reviews-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                    <i class="fas fa-spinner fa-spin" style="color: var(--primary); font-size: 1.5rem;"></i>
+                </div>
+            </div>
         </div>
     </main>
 </div>
@@ -174,6 +188,56 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 container.innerHTML = html;
             }
+            
+            // Handle Reviews
+            const reviews = data.recent_reviews;
+            const reviewsContainer = document.querySelector('#community-reviews-body');
+            if (reviewsContainer) {
+                if (!reviews || reviews.length === 0) {
+                    reviewsContainer.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem;">
+                            No community feedback available yet.
+                        </div>
+                    `;
+                } else {
+                    let reviewsHtml = '';
+                    reviews.forEach(r => {
+                        const firstChar = r.user_name ? r.user_name[0].toUpperCase() : 'U';
+                        const stars = Array.from({length: 5}, (_, i) => 
+                            `<i class="fas fa-star ${i < r.rating ? 'filled' : ''}" style="font-size: 0.85rem;"></i>`
+                        ).join('');
+                        
+                        reviewsHtml += `
+                            <article class="review-card" style="margin-bottom: 0; padding: 1.5rem; animation: none; transform: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                                <div class="review-card-header">
+                                    <div class="review-avatar volunteer" style="width: 40px; height: 40px; font-size: 1rem;">
+                                        ${firstChar}
+                                    </div>
+                                    <div class="review-meta">
+                                        <div class="review-meta-name" style="font-size: 0.95rem;">${r.user_name}</div>
+                                        <div class="review-meta-sub">
+                                            <span class="role-badge volunteer" style="font-size: 0.65rem;">Volunteer</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stars-display" style="gap: 2px; margin: 0.75rem 0;">
+                                    ${stars}
+                                </div>
+                                <p class="review-content" style="font-size: 0.9rem; line-height: 1.5; border-left-width: 2px;">
+                                    ${r.content}
+                                </p>
+                            </article>
+                        `;
+                    });
+                    reviewsContainer.innerHTML = reviewsHtml;
+                }
+                const reviewsLastUpdated = document.querySelector('#reviews-last-updated');
+                if (reviewsLastUpdated) {
+                    const now = new Date();
+                    reviewsLastUpdated.textContent = `Updated ${now.toLocaleTimeString()}`;
+                }
+            }
+
             const lastUpdated = document.querySelector('#donor-last-updated');
             if (lastUpdated) {
                 const now = new Date();
