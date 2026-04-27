@@ -3,3 +3,4 @@ Werkzeug==2.3.7
 python-dotenv==1.1.0
 pymongo[srv]
 dnspython
+gunicorn
