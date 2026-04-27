@@ -13,7 +13,8 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your_fallback_secret_key')
-UPLOAD_FOLDER = '/tmp/uploads' if os.environ.get('VERCEL') == '1' else 'static/uploads'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = '/tmp/uploads' if os.environ.get('VERCEL') == '1' else os.path.join(BASE_DIR, 'static', 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 if not os.path.exists(UPLOAD_FOLDER):

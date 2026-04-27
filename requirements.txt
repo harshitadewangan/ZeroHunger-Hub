@@ -1,6 +1,6 @@
 Flask==2.3.3
 Werkzeug==2.3.7
 python-dotenv==1.1.0
-pymongo[srv]
+pymongo
 dnspython
 gunicorn
