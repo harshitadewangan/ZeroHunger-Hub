@@ -23,8 +23,18 @@ if not os.path.exists(UPLOAD_FOLDER):
         pass
 
 # --- DATABASE CONFIGURATION ---
-MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/zerohungerhub')
-client = MongoClient(MONGO_URI)
+MONGO_URI = os.environ.get('MONGO_URI')
+if not MONGO_URI:
+    raise RuntimeError(
+        'Missing MONGO_URI environment variable. Set MONGO_URI in your Render environment variables or .env file.'
+    )
+
+client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+try:
+    client.admin.command('ping')
+except Exception as exc:
+    raise RuntimeError(f'Unable to connect to MongoDB at MONGO_URI: {exc}') from exc
+
 try:
     db = client.get_default_database()
 except Exception:
