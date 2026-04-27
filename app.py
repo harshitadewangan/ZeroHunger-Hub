@@ -30,7 +30,7 @@ if not MONGO_URI:
         'Missing MONGO_URI environment variable. Set MONGO_URI in your Render environment variables or .env file.'
     )
 
-client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000, ssl_cert_reqs='CERT_NONE')
 try:
     client.admin.command('ping')
 except Exception as exc:
